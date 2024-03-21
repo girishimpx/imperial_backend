@@ -1,0 +1,19 @@
+const { validateResult } = require("../../../middleware/utils");
+const { check } = require("express-validator");
+
+/**
+ * Validates create new item request
+ */
+const VAlidate_open_order_history_for_future = [
+  check("instId").not().isEmpty().withMessage("instId required"),
+  check("instType").not().isEmpty().withMessage("instType required"),
+  check("apiKey").not().isEmpty().withMessage("Apikey required"),
+  check("secretKey").not().isEmpty().withMessage("secretKey required"),
+  check("passphrase").not().isEmpty().withMessage("passphrase required"),
+
+  (req, res, next) => {
+    validateResult(req, res, next);
+  },
+];
+
+module.exports = { VAlidate_open_order_history_for_future };

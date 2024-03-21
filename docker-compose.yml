@@ -1,0 +1,19 @@
+version: "3"
+
+services:
+
+  imperial_back:
+    build:
+      dockerfile: "Dockerfile"
+      context: "."
+    container_name: imperial_back
+    volumes:
+      - ./public/uploads:/usr/src/app/public/uploads
+    restart: unless-stopped
+    networks:
+      - default
+
+networks:
+  default:
+    external:
+      name: Imperialx
