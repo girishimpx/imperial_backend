@@ -7,6 +7,8 @@ const getBalance = require('./getBalanceUsdt')
 const USER = require('../../models/user')
 const cpytrades = require('../../models/copytrade')
 const { assetBills } = require("./helpers/assetBills");
+const { imperialApiAxios } = require('../../middleware/ImperialApi/imperialApi')
+
 
 const getWalletById = async (req, res) => {
     try {
@@ -27,6 +29,29 @@ const getWalletById = async (req, res) => {
             balance.push(chain_balance)
 
         }
+
+        const essesentials = await cpytrades.findOne({user_id : user._id})
+        console.log(essesentials,'essesentials');
+
+        // apikey
+        // secretkey
+        // passphrase
+
+        // /api/v5/account/balance?ccy=USDT
+
+        const USDTBAL = await imperialApiAxios(
+            "get",
+            "https://www.okx.com/api/v5/account/balance",
+            `/api/v5/account/balance`,
+            {},
+            essesentials.apikey,
+            essesentials.secretkey,
+            essesentials.passphrase,
+        );
+
+        // console.log(USDTBAL.data[0].totalEq,'CHAIN');
+        total_price_in_usd = Number(USDTBAL.data[0].totalEq)
+        console.log(total_price_in_usd,'*******************');
 
         const eligiblecheck = await USER.findById(user._id)
 

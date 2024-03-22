@@ -18,6 +18,7 @@ const { marketPairsbyName } = require('./marketPairsbyName')
 const { marketPairsAuth } = require('./marketPairsAuth')
 const { addFavPairs } = require('./addFavPairs')
 const { addFavPairsFuture } = require('./addFavPairsFuture')
+const { add_extra_asset } = require('./add_extra_asset')
 
 
 
@@ -42,5 +43,6 @@ module.exports = {
     getAssetIcon,
     marketPairsAuth,
     addFavPairs,
-    addFavPairsFuture
+    addFavPairsFuture,
+    add_extra_asset
 }

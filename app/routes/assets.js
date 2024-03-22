@@ -24,7 +24,8 @@ const {
   getAssetIcon,
   marketPairsAuth,
   addFavPairs,
-  addFavPairsFuture
+  addFavPairsFuture,
+  add_extra_asset
 } = require('../controllers/assets')
 const {
   validateCreateAsset,
@@ -50,6 +51,13 @@ router.get(
   trimRequest.all,
   getAllAssets
 )
+
+router.get(
+  '/add_extra_asset',
+  trimRequest.all,
+  add_extra_asset
+)
+
 /*
  * Get items route
  */
