@@ -20,4 +20,12 @@ const WithDrawOtpEmail = (locale = '', user = {}, str) => {
   prepareToSendEmail(user, subject, htmlMessage)
 }
 
-module.exports = { sendRegistrationEmailMessage, WithDrawOtpEmail }
+const KycStatus = (locale = '', user = {}, str) => {
+  console.log('status');
+  i18n.setLocale(locale)
+  const subject = 'KYC STATUS'
+  const htmlMessage = str
+  prepareToSendEmail(user, subject, htmlMessage)
+}
+
+module.exports = { sendRegistrationEmailMessage, WithDrawOtpEmail, KycStatus }

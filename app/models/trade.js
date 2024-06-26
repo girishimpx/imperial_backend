@@ -8,6 +8,12 @@ const tradeSchema = new Schema(
       type: mongoose.Types.ObjectId,
       ref: "User",
     },
+    tpPrice: {
+      type: String,
+    },
+    slPrice: {
+      type: String,
+    },
     loan_user_id: {
       type: mongoose.Types.ObjectId,
       ref: "User",
@@ -22,7 +28,7 @@ const tradeSchema = new Schema(
     },
     trade_type: {
       type: String,
-      enum: { values: ["buy", "sell"] },
+      enum: { values: ["buy", "sell", "Buy", "Sell"] },
     },
     ouid: {
       type: String,
@@ -95,6 +101,10 @@ const tradeSchema = new Schema(
       type: String
     },
     completed_status: {
+      type: Boolean,
+      default: false,
+    },
+    istpslclose: {
       type: Boolean,
       default: false,
     },

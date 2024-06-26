@@ -33,6 +33,7 @@ const {
   Total_tradeList_of_an_user,
   Copy_trade_start,
   createsubaccount,
+  FutureTradeHistory
 } = require("../controllers/trade/index");
 const {
   validateCreateTrade,
@@ -49,6 +50,7 @@ const {
   validateUserTradeHistory,
   VAlidate_open_order_history_for_future,
   Validate_copy_trade_status,
+
 } = require("../controllers/trade/validators/index");
 
 /*Admin panel buy sell side*/
@@ -304,5 +306,13 @@ router.post(
   validateAdminTradeList,
   admintradelist
 );
+
+router.post(
+  '/futureTradeHistory',
+  requireAuth,
+  roleAuthorization(['user']),
+  trimRequest.all,
+  FutureTradeHistory
+)
 
 module.exports = router;

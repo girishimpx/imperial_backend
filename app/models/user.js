@@ -10,6 +10,9 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: true
     },
+    image: {
+      type: String
+    },
     email: {
       type: String,
       validate: {
@@ -39,12 +42,12 @@ const UserSchema = new mongoose.Schema(
     },
     iseligible: {
       type: String,
-      enum: ['completed', 'Approved', 'not_eligible' ,'null'],
+      enum: ['completed', 'Approved', 'not_eligible', 'null'],
       default: 'null'
     },
-    referaldeposit:{
-      type : String,
-      enum: ['eligible', 'not_eligible' ,'null'],
+    referaldeposit: {
+      type: String,
+      enum: ['eligible', 'not_eligible', 'null'],
       default: 'null',
     },
     redeem_points: {
@@ -145,6 +148,17 @@ const UserSchema = new mongoose.Schema(
       default: false
     },
     rating: {
+      type: Number,
+      default: 0
+    },
+    is_reward: {
+      type: Number,
+      enum: [0, 1, 2]
+    },
+    escrow_refer_balance: {
+      type: Number,
+    },
+    total_reward: {
       type: Number,
       default: 0
     }

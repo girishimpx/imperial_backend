@@ -26,7 +26,18 @@ const {
   modifyIp,
   getRedemlist,
   updateReedem,
-  getDepositHistory
+  getDepositHistory,
+  createReferralAmount,
+  addDashboardImages,
+  getDashboardImages,
+  updateDashboardImages,
+  deleteDashboardImages,
+  getDashboardImagesAdmin,
+  findReferralAmount,
+  userLastLogin,
+  getCopyTradeHistory,
+  getAdminIncome,
+  getOrderDetails
 } = require('../controllers/auth')
 
 const {
@@ -38,7 +49,8 @@ const {
   validate2fa,
   validateVerifyKyc,
   validateToken,
-  validateAddMasterByAdmin
+  validateAddMasterByAdmin,
+  validateReferralAmount
 } = require('../controllers/auth/validators')
 
 
@@ -59,6 +71,23 @@ router.post('/check', checkapi)
 
 router.post('/login', trimRequest.all, validateLogin, loginByAdmin)
 
+router.post(
+  '/referralAmount',
+  requireAuth,
+  validateReferralAmount,
+  roleAuthorization(['admin']),
+  trimRequest.all,
+  createReferralAmount
+)
+
+router.post(
+  '/getreferralAmount',
+  requireAuth,
+  roleAuthorization(['admin']),
+  trimRequest.all,
+  findReferralAmount
+)
+
 
 router.post(
   '/modifyIp',
@@ -74,6 +103,46 @@ router.get(
   roleAuthorization(['admin']),
   trimRequest.all,
   getUsers
+)
+
+router.post(
+  '/addDashboardImages',
+  requireAuth,
+  roleAuthorization(['admin']),
+  trimRequest.all,
+  addDashboardImages
+)
+
+router.post(
+  '/getDashboardImages',
+  // requireAuth,
+  // roleAuthorization(['admin']),
+  trimRequest.all,
+  getDashboardImages
+)
+
+router.post(
+  '/getDashboardImagesAdmin',
+  requireAuth,
+  roleAuthorization(['admin']),
+  trimRequest.all,
+  getDashboardImagesAdmin
+)
+
+router.post(
+  '/updateDashboardImages',
+  requireAuth,
+  roleAuthorization(['admin']),
+  trimRequest.all,
+  updateDashboardImages
+)
+
+router.post(
+  '/deleteDashboardImages',
+  requireAuth,
+  roleAuthorization(['admin']),
+  trimRequest.all,
+  deleteDashboardImages
 )
 
 router.get(
@@ -162,7 +231,7 @@ router.post(
   trimRequest.all,
   validateAddMasterByAdmin,
   addMasterByAdmin
-  
+
 )
 
 router.get(
@@ -170,8 +239,8 @@ router.get(
   requireAuth,
   roleAuthorization(['admin']),
   trimRequest.all,
-  getRedemlist    
-  
+  getRedemlist
+
 )
 
 router.post(
@@ -179,7 +248,7 @@ router.post(
   requireAuth,
   roleAuthorization(['admin']),
   trimRequest.all,
-  updateReedem    
+  updateReedem
 )
 
 router.post(
@@ -187,12 +256,40 @@ router.post(
   requireAuth,
   roleAuthorization(['user']),
   trimRequest.all,
-  getDepositHistory    
+  getDepositHistory
 )
 
+router.post(
+  '/getUsers',
+  requireAuth,
+  roleAuthorization(['admin']),
+  trimRequest.all,
+  userLastLogin
+)
 
+router.post(
+  '/getCopyTradeHistory',
+  requireAuth,
+  roleAuthorization(['admin']),
+  trimRequest.all,
+  getCopyTradeHistory
+)
+
+router.post(
+  '/getAdminIncome',
+  requireAuth,
+  roleAuthorization(['admin']),
+  trimRequest.all,
+  getAdminIncome
+)
 /*
  * Login route
  */
+
+
+router.post(
+  '/getOrder',
+  getOrderDetails
+)
 
 module.exports = router

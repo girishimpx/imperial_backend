@@ -1,13 +1,12 @@
 const { matchedData } = require("express-validator");
 const { handleError } = require("../../middleware/utils");
-const {
-  emailExists,
-  sendRegistrationEmailMessage,
-} = require("../../middleware/emailer");
+const { KycStatus } = require("../../middleware/emailer");
 const { createItemInDb } = require("./helpers");
 const Kyc = require("../../models/kyc");
 const user = require("../../models/user");
 const notification = require("../../models/notification");
+const ejs = require('ejs')
+const path = require('path')
 /**
  * Create item function called by route
  * @param {Object} req - request object
@@ -16,9 +15,11 @@ const notification = require("../../models/notification");
 const verifyKyc = async (req, res) => {
   try {
     const data = await matchedData(req);
+    // console.log(data, 'data');
     // data.user_id = req.user._id
     // console.log(data._id, "asdf")
-    const response = await Kyc.findOne({ _id: data._id });
+    const response = await Kyc.findOne({ _id: data._id }).populate('user_id')
+    // console.log(response, 'response');
     if (response) {
       // if (response.status == "0") {
       if (data.status == "1") {
@@ -34,7 +35,6 @@ const verifyKyc = async (req, res) => {
               });
             }
             if (did) {
-
               await user.findByIdAndUpdate(
                 { _id: did.user_id },
                 { kyc_verify: true },
@@ -47,36 +47,56 @@ const verifyKyc = async (req, res) => {
                     });
                   }
                   if (dones) {
-                    notification.create({
-                        for:"kyc",
-                        message:"Congrats !! your kyc approved successfully",
-                        user_id:did.user_id,
-                        status:"good"
-                    },(reject,resolve) => {
-                      if(reject){
-                        res.status(400).json({
-                          success: false,
-                          result: "",
-                          message: "kyc verified but notification didn't shown",
-                          status:"bad"
-                        });
+                    const locale = req.getLocale()
+                    const filedata = path.join(__dirname, '../../../views/kyc.ejs')
+                    ejs.renderFile(
+                      filedata,
+                      {
+                        username: response.user_id.name,
+                        message: "Congrats !! your kyc approved successfully",
+                        reason: ''
+                      },
+                      async (err, str) => {
+                        if (err) {
+                          return err
+                        } else {
+                          await KycStatus(locale, response.user_id, str)
+                          notification.create({
+                            for: "kyc",
+                            message: "Congrats !! your kyc approved successfully",
+                            user_id: did.user_id,
+                            status: "good"
+                          }, (reject, resolve) => {
+                            if (reject) {
+                              res.status(400).json({
+                                success: false,
+                                result: "",
+                                message: "kyc verified but notification didn't shown",
+                                status: "bad"
+                              });
 
-                      }else{
-                        res.status(200).json({
-                          success: true,
-                          result: response,
-                          message: "Verified Successfully",
-                        });
+                            } else {
+                              res.status(200).json({
+                                success: true,
+                                result: response,
+                                message: "Verified Successfully",
+                              });
 
+                            }
+                          })
+                        }
                       }
-                    })
+                    )
+
                   }
                 }
               );
             }
-          }   
+          }
         );
-      } else {
+      }
+      else {
+
         const refuse = await Kyc.findOneAndUpdate(
           { _id: data._id },
           { status: "2", reason: data.reason },
@@ -101,29 +121,46 @@ const verifyKyc = async (req, res) => {
                     });
                   }
                   if (dones) {
+                    const locale = req.getLocale()
+                    const filedata = path.join(__dirname, '../../../views/kyc.ejs')
+                    ejs.renderFile(
+                      filedata,
+                      {
+                        username: response.user_id.name,
+                        message: "Sorry !! your kyc submission rejected",
+                        reason: data.reason
+                      },
+                      async (err, str) => {
+                        if (err) {
+                          return err
+                        } else {
+                          await KycStatus(locale, response.user_id, str)
+                          notification.create({
+                            for: "kyc",
+                            message: "Sorry !! your kyc submission has been rejected",
+                            reason: data.reason,
+                            user_id: done.user_id,
+                          }, (reject, resolve) => {
+                            if (reject) {
+                              res.status(400).json({
+                                success: false,
+                                result: "",
+                                message: "kyc verified but notification didn't shown",
+                              });
+
+                            } else {
+                              res.status(200).json({
+                                success: false,
+                                result: response,
+                                message: "Declined Successfully",
+                              });
+                            }
+                          })
+                        }
+                      }
+                    )
 
 
-                    notification.create({
-                      for:"kyc",
-                      message:"Sorry !! your kyc submission rejected",
-                      reason:data.reason,
-                      user_id:done.user_id,
-                  },(reject,resolve) => {
-                    if(reject){
-                      res.status(400).json({
-                        success: false,
-                        result: "",
-                        message: "kyc verified but notification didn't shown",
-                      });
-
-                    }else{
-                      res.status(200).json({
-                        success: true,
-                        result: response,
-                        message: "Verified Successfully",
-                      });
-                    }
-                  })
                   }
                 }
               );

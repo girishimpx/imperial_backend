@@ -3,7 +3,7 @@ const { emailExistsExcludingMyself } = require('./emailExistsExcludingMyself')
 const { prepareToSendEmail } = require('./prepareToSendEmail')
 const { sendEmail } = require('./sendEmail')
 const {
-  sendRegistrationEmailMessage, WithDrawOtpEmail
+  sendRegistrationEmailMessage, WithDrawOtpEmail, KycStatus
 } = require('./sendRegistrationEmailMessage')
 const {
   sendResetPasswordEmailMessage
@@ -16,6 +16,7 @@ module.exports = {
   prepareToSendEmail,
   sendEmail,
   WithDrawOtpEmail,
+  KycStatus,
   sendRegistrationEmailMessage,
   sendResetPasswordEmailMessage
 }

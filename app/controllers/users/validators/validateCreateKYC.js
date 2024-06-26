@@ -83,7 +83,7 @@ const validateCreateKYC = [
         .withMessage('IFSC Code MISSING')
         .not()
         .trim(),
-    check('bank')
+    check('bank_name')
         .exists()
         .withMessage('Bank Name MISSING')
         .not()
@@ -111,13 +111,20 @@ const validateCreateKYC = [
         .trim(),
     check('document_image')
         .exists()
-        .withMessage('document_image MISSING')
+        .withMessage('document image MISSING')
         .not()
         .isEmpty()
         .withMessage('Please Enter Document Image')
         .trim(),
+    check('expiry_date')
+        .exists()
+        .withMessage('expiry date MISSING')
+        .not()
+        .isEmpty()
+        .withMessage('Please Enter Expiry Date')
+        .trim(),
     (req, res, next) => {
-        
+
         validateResult(req, res, next)
     }
 ]

@@ -13,7 +13,7 @@ const { allTickers } = require('./allTickersCron')
 const { get_Future_pairs } = require('./get_future_pairs')
 const { marketPairs } = require('./marketPairs')
 const { createasseticon } = require('./createAssetIcon')
-const { getAssetIcon } = require('./getAssetIcon')        
+const { getAssetIcon } = require('./getAssetIcon')
 const { marketPairsbyName } = require('./marketPairsbyName')
 const { marketPairsAuth } = require('./marketPairsAuth')
 const { addFavPairs } = require('./addFavPairs')
@@ -44,5 +44,5 @@ module.exports = {
     marketPairsAuth,
     addFavPairs,
     addFavPairsFuture,
-    add_extra_asset
+    add_extra_asset,
 }

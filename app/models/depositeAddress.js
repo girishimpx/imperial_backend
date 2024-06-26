@@ -4,6 +4,9 @@ const mongoosePaginate = require('mongoose-paginate-v2')
 const { Schema } = mongoose;
 const depositeAddressSchema = new Schema(
     {
+        name:{
+            type: String
+        },
         ccy: {
             type: String,
         },

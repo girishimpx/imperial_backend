@@ -17,7 +17,7 @@ const AssetSchema = new mongoose.Schema(
     },
     chain: {
         type: String,
-        enum : ['fiat','coin','erc20','bep20','trc20','trc10'],
+        // enum : ['fiat','coin','erc20','bep20','trc20','trc10'],
         required: true
     },
     withdraw: {

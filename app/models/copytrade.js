@@ -53,7 +53,7 @@ const copytradeSchema = new Schema(
     },
     exchange: {
       type: String,
-      enum: ["imperial", "binance", "okx", "null"],
+      enum: ["imperial", "binance", "okx", "bybit", "null"],
       default: "null",
     },
     trade_status: {

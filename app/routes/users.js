@@ -52,7 +52,8 @@ const {
   tradingView,
   transferFunds,
   getInternalTransfer,
-  assetBills
+  assetBills,
+  updateUserProfile
 } = require("../controllers/users");
 
 const {
@@ -86,6 +87,14 @@ router.post(
   roleAuthorization(["user"]),
   trimRequest.all,
   getMasters
+);
+
+router.post(
+  "/updateprofile",
+  requireAuth,
+  roleAuthorization(["user"]),
+  trimRequest.all,
+  updateUserProfile
 );
 
 router.post(
@@ -334,6 +343,7 @@ router.post(
 
 const currentTime = Date.now();
 
+
 const imageupload = multer({
   storage: multer.diskStorage({
     destination: "./public/uploads",
@@ -360,8 +370,8 @@ router.post(
 );
 router.post(
   "/imageUploadAdmin",
-  requireAuth,
-  roleAuthorization(["admin"]),
+  // requireAuth,
+  // roleAuthorization(["admin"]),
   trimRequest.all,
   imageupload.single("image"),
   imageApi

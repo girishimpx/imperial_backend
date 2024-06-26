@@ -7,6 +7,7 @@ const { registerUsers, registergoogleUsers } = require('./helpers/registerUser')
 const { saveUserAccessAndReturnToken } = require('./helpers/saveUserAccessAndReturnToken')
 const { generateToken } = require('./helpers/generateToken')
 const { handleError } = require('../../middleware/utils')
+const { createWalletForGoogleUsers } = require('../byBitAPI/createWalletForGoogleUsers')
 const {
   emailExists,
   gemailExists,
@@ -39,6 +40,18 @@ const register = async (req, res) => {
 
         const random_number = await randomNumber()
         if (req.referred_by_code !== undefined) {
+          const findReferral = await User.findOne({ referral_code: req.referred_by_code })
+          console.log(findReferral,'findReferral');
+          console.log();
+          if(findReferral === null){
+              return res.status(201).json({
+                success: false,
+                message: "Invalid Referral Id"
+              })
+          }
+          if (findReferral.is_reward == 2) {
+            await User.findOneAndUpdate({ _id: findReferral._id }, { $set: { is_reward: 0 } })
+          }
           const findCri = {
             referral_code: req.referred_by_code
           }
@@ -57,7 +70,11 @@ const register = async (req, res) => {
 
             ejs.renderFile(
               filedata,
-              { username: item.name, url: `https://app.imperialx.exchange/tokenpage/${response}` },
+              {
+                username: item.name,
+                // url: `http://localhost:3000/tokenpage/${response}`
+                url: `https://app.imperialx.exchange/tokenpage/${response}`
+              },
               async (err, str) => {
                 if (err) {
                   return err
@@ -92,7 +109,11 @@ const register = async (req, res) => {
 
           ejs.renderFile(
             filedata,
-            { username: item.name, url: `https://app.imperialx.exchange/tokenpage/${response}` },
+            {
+              username: item.name,
+              // url: `http://localhost:3000/tokenpage/${response}`
+              url: `https://app.imperialx.exchange/tokenpage/${response}`
+            },
             async (err, str) => {
               if (err) {
                 return err
@@ -134,6 +155,8 @@ const register = async (req, res) => {
         // const userInfo = await setUserInfo(item)
         const user = await User.findOne({ email: userData.email })
         const response = await saveUserAccessAndReturnToken(req, user)
+        console.log(user._id,'useruuuuu');
+        await createWalletForGoogleUsers(user._id,user.name);
         res.status(200).json({
           success: true,
           result: response,

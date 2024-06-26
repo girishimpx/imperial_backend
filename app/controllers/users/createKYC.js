@@ -16,11 +16,13 @@ const createKYC = async (req, res) => {
     try {
         const users = req.user
         const data = await matchedData(req)
+        data.device_id = req.body.device_id
+        // console.log(data, 'kycdata');
         data.user_id = users._id
 
 
         const user = await Kyc.find({ user_id: users._id })
-        
+
         if (user.length > 0) {
             res.status(400).json({
                 success: false,
@@ -28,7 +30,7 @@ const createKYC = async (req, res) => {
                 message: "You have already submitted KYC"
             })
         } else {
-            
+
             const response = await Kyc.create(data)
             res.status(200).json({
                 success: true,

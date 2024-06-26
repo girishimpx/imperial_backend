@@ -24,7 +24,7 @@ const { Total_tradeList_of_an_user } = require('./Total_tradelist_of_an_user')
 const { Copy_trade_start } = require('./copytrade_status_change')
 const { disableSubscription } = require('./disableSubscription')
 const { createsubaccount } = require('./createsubaccount')
-
+const { FutureTradeHistory } = require('./getFutureTradeHistory')
 
 module.exports = {
   createTrade,
@@ -51,5 +51,6 @@ module.exports = {
   StatergyHistory,
   lastTradeHistory,
   disableSubscription,
-  createsubaccount
+  createsubaccount,
+  FutureTradeHistory
 };

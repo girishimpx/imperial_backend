@@ -12,6 +12,10 @@ const { withdrawUser } = require("./withdrawUser");
 const { withdrawOtp } = require("./withdrawOtp");
 const { withDrawCheckOTP } = require("./withDrawCheckOTP");
 const { tradepairs } = require("./tradepairs");
+const { updateReedem } = require('./updateRedeem')
+const { getSubAccBalance } = require('./getSubAccBalance')
+
+
 module.exports = {
   createWallet,
   getAllWallet,
@@ -27,4 +31,6 @@ module.exports = {
   withdrawOtp,
   withDrawCheckOTP,
   tradepairs,
+  updateReedem,
+  getSubAccBalance
 };

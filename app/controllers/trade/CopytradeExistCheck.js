@@ -11,25 +11,25 @@ const { handleError } = require("../../middleware/utils");
  * @param {Object} res - response object
  */
 
-const CheckTradeDetail= async (req, res) => {
+const CheckTradeDetail = async (req, res) => {
   try {
     const user = req.user;
     req = matchedData(req)
-const filterData = await copytrade.find({user_id:user._id})
-if(filterData.length > 0 ){
-    res.status(200).json({
+    const filterData = await copytrade.find({ user_id: user._id })
+    if (filterData.length > 0) {
+      res.status(200).json({
         success: true,
         result: true,
-        message:"user has given trade details" ,
+        message: "user has given trade details",
       });
-}else{
-  
-    res.status(400).json({
+    } else {
+
+      res.status(400).json({
         success: false,
         result: "",
         message: "User has not given trade details",
       });
-}
+    }
 
 
   } catch (error) {

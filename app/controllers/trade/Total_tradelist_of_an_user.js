@@ -20,14 +20,14 @@ const Total_tradeList_of_an_user = async (req, res) => {
     const idverify = mongoose.Types.ObjectId.isValid(req.id);
 
     let list = {
-    //   "BTC-XRP":[{a:0},{a:0}]
+      //   "BTC-XRP":[{a:0},{a:0}]
     };
 
     if (idverify) {
       const tradeList = await trade.find({ user_id: req.id });
       if (tradeList.length > 0) {
         for (let i = 0; i < tradeList.length; i++) {
-          
+
 
           if (list[tradeList[i].pair]) {
             if (
@@ -47,7 +47,7 @@ const Total_tradeList_of_an_user = async (req, res) => {
               list[tradeList[i].pair].future.push(tradeList[i]);
             }
 
-            
+
           } else {
             let app = {
               spot: [],

@@ -15,7 +15,7 @@ const PaginateTradeHistory = async (req, res) => {
     const options = await listInitOptions(req)
     const user = req.user;
     // let tradeList = await trade.paginate({ user_id: user._id },options);
-    let tradeList = await trade.find({ user_id: user._id })
+    let tradeList = await trade.find({ user_id: user._id }).sort({createdAt : -1});
 
     if (tradeList.length > 0) {
       res.status(200).json({

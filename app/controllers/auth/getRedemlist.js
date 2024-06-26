@@ -1,95 +1,87 @@
 const USER = require('../../models/user')
+const Referral = require('../../models/referral')
+
 const { handleError } = require('../../middleware/utils')
 
 const getRedemlist = async (req, res) => {
     try {
-    const redeemlist = await USER.aggregate([
-        {
-            $match: {
-                iseligible : {$exists : true}
-            }
-        },
-        {
-            $match: {
-                iseligible : 'completed'
-            }
-        },
-        // {
-        //     $project: {
-        //         _id : 1,
-        //         iseligible : 1,
-        //         redeem_points : 1,
-        //         name : 1,
-        //         email : 1,
-        //         referred_by_code : 1,
-        //         referred_by_id : 1,
-        //         referral_code : 1,
-        //         role :1
-        //     }
-        // },
-        {
-            $lookup: {
-              from: 'users',
-              localField: 'referred_by_id',
-              foreignField: '_id',
-              as: 'Following'
-            }
-        },
-        {
-            $unwind: '$Following'
-        },
-        {
-            $lookup: {
-              from: 'kycs',
-              localField: '_id',
-              foreignField: 'user_id',
-              as: 'accountdetailes'
-            }
-        },
-        {
-            $unwind: '$accountdetailes'
-        },
-        {
-            $project: {
-                _id : 1,
-                iseligible : 1,
-                redeem_points : 1,
-                name : 1,
-                email : 1,
-                referred_by_code : 1,
-                referred_by_id : 1,
-                referral_code : 1,
-                role :1,
-                // 'Following._id' : 1,
-                // 'Following.iseligible' : 1,
-                // 'Following.redeem_points' : 1,
-                'Following.name' : 1,
-                'Following.email' : 1,
-                'Following.referred_by_code' : 1,
-                // 'Following.referred_by_id' : 1,
-                // 'Following.referral_code' : 1,
-                // 'Following.role' :1,
-                'accountdetailes.account_no' :1,
-                'accountdetailes.ifsc_code' :1
-            }
-        },
-    ])  
-    
-    // const h1 = await USER.find({iseligible : {$exists: true}})
+        const redeemlist = await Referral.aggregate([
+            {
+                $match: {
+                    is_reward: 1,
+                    is_deposit: true,
+                    is_copytrade: true
+                }
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'user_id',
+                    foreignField: '_id',
+                    as: 'user'
+                }
+            },
+            {
+                $unwind: '$user'
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'referral_id',
+                    foreignField: '_id',
+                    as: 'ReferredBy'
+                }
+            },
+            {
+                $unwind: '$ReferredBy',
 
-    if(redeemlist.length > 0){
-    res.status(200).json({
-        success: true,
-        result: redeemlist,
-        message: 'Data found succesfully'
-    })
-    }else{
-        res.status(200).json({
-            success: false,
-            result: [],
-            message: 'No Data Found'
-        })
-    }
+            },
+            {
+                $lookup: {
+                    from: 'kycs',
+                    localField: 'referral_id',
+                    foreignField: 'user_id',
+                    as: 'accountdetailes'
+                }
+            },
+            {
+                $unwind: '$accountdetailes'
+            },
+            {
+                $project: {
+                    "_id": 1,
+                    "amount": 1,
+                    'user.name': 1,
+                    'user.email': 1,
+                    'user.referred_by_code': 1,
+                    'user.referred_by_id': 1,
+                    'ReferredBy.name': 1,
+                    'ReferredBy.email': 1,
+                    'ReferredBy.redeem_points': 1,
+                    'accountdetailes.account_no': 1,
+                    'accountdetailes.ifsc_code': 1,
+                    'accountdetailes.bank_name': 1,
+                }
+            },
+        ])
+
+        // const h1 = await USER.find({iseligible : {$exists: true}})
+
+        console.log(redeemlist, 'redeem');
+
+        if (redeemlist.length > 0) {
+            res.status(200).json({
+                success: true,
+                result: redeemlist,
+                message: 'Data found succesfully'
+            })
+        } else {
+            res.status(201).json({
+                success: false,
+                result: [],
+                message: 'No Data Found'
+            })
+        }
 
     } catch (error) {
         handleError(res, error)

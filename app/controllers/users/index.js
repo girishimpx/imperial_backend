@@ -32,6 +32,7 @@ const { tradingView } = require('./tradingView')
 const { transferFunds } = require('./transferFunds')
 const { getInternalTransfer } = require('./getInternalTransfer')
 const { assetBills } = require('../wallet/helpers/assetBills')
+const { updateUserProfile } = require('./updateUserProfile')
 
 
 module.exports = {
@@ -72,5 +73,6 @@ module.exports = {
   tradingView,
   transferFunds,
   getInternalTransfer,
-  assetBills
+  assetBills,
+  updateUserProfile
 }

@@ -17,7 +17,7 @@ const { generateToken } = require('./generateToken')
 const { getUserIdFromToken } = require('./getUserIdFromToken')
 const { markResetPasswordAsUsed } = require('./markResetPasswordAsUsed')
 const { passwordsDoNotMatch } = require('./passwordsDoNotMatch')
-const { registerUser,registergoogleUsers } = require('./registerUser')
+const { registerUser, registergoogleUsers } = require('./registerUser')
 const { returnRegisterToken } = require('./returnRegisterToken')
 const { saveForgotPassword } = require('./saveForgotPassword')
 const { saveLoginAttemptsToDB } = require('./saveLoginAttemptsToDB')
@@ -32,6 +32,8 @@ const { updatePassword } = require('./updatePassword')
 const { userIsBlocked } = require('./userIsBlocked')
 const { verificationExists } = require('./verificationExists')
 const { verifyUser } = require('./verifyUser')
+const { updateReferral } = require('./updateReferral')
+const { getLivePrice } = require('./getLivePrice')
 
 module.exports = {
   blockIsExpired,
@@ -62,5 +64,7 @@ module.exports = {
   updatePassword,
   userIsBlocked,
   verificationExists,
-  verifyUser
+  verifyUser,
+  updateReferral,
+  getLivePrice
 }

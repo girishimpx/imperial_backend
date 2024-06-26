@@ -3,6 +3,12 @@ const mongoosePaginate = require('mongoose-paginate-v2')
 
 const WalletSchema = new mongoose.Schema(
   {
+    coinname: {
+      type: String
+    },
+    usdValue: {
+      type: String
+    },
     user_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'UserSchema',
@@ -39,6 +45,10 @@ const WalletSchema = new mongoose.Schema(
     margin_loan: {
       type: String,
       default: "0"
+    },
+    url: {
+      type: String,
+      default: ""
     },
     max_loan: [],
     mugavari: []

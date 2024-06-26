@@ -17,12 +17,12 @@ const mySubscriptionList = async (req, res) => {
     const user = req.user;
 
     const enable = await trade.find({ user_id: user._id })
-const enableLength = enable.length;
+    const enableLength = enable.length;
     const disable = await disableTrade.find({ user_id: user._id })
     const disableLength = disable.length;
     const Subscription = enable.concat(disable);
-    Array.prototype.sortBy = function(p) {
-      return this.slice(0).sort(function(a,b) {
+    Array.prototype.sortBy = function (p) {
+      return this.slice(0).sort(function (a, b) {
         return (a[p] > b[p]) ? 1 : (a[p] < b[p]) ? -1 : 0;
       });
     }
@@ -30,7 +30,7 @@ const enableLength = enable.length;
     if (mySubscription.length > 0) {
       res.status(200).json({
         success: true,
-        result: mySubscription,enableLength,disableLength,
+        result: mySubscription, enableLength, disableLength,
         message: "Data Found successfully",
       });
     } else {
@@ -39,7 +39,7 @@ const enableLength = enable.length;
         result: "",
         message: "Data Not Found ",
       });
-    } 
+    }
   } catch (error) {
     handleError(res, error);
   }

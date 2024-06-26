@@ -6,7 +6,7 @@ const { validateVerify } = require('./validateVerify')
 const { validate2fa } = require('./validate2fa')
 const { validateVerifyKyc } = require('./validateVerifyKyc')
 const { validateAddMasterByAdmin } = require('./validateAddMasterByAdmin')
-
+const { validateReferralAmount } = require('./validateReferralAmount')
 
 
 
@@ -18,5 +18,6 @@ module.exports = {
   validateVerify,
   validate2fa,
   validateVerifyKyc,
-  validateAddMasterByAdmin
+  validateAddMasterByAdmin,
+  validateReferralAmount
 }

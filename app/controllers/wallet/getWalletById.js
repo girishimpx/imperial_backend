@@ -1,107 +1,239 @@
-const { getItemById } = require('../../middleware/db')
-const wallet = require('../../models/wallet')
-const asset = require('../../models/assets')
-const { handleError } = require('../../middleware/utils')
-const { matchedData } = require('express-validator')
-const getBalance = require('./getBalanceUsdt')
+const { handleError } = require("../../middleware/utils");
+const copytrade = require('../../models/copytrade');
+const { RestClientV5 } = require('bybit-api');
 const USER = require('../../models/user')
-const cpytrades = require('../../models/copytrade')
-const { assetBills } = require("./helpers/assetBills");
-const { imperialApiAxios } = require('../../middleware/ImperialApi/imperialApi')
-
+const referral = require('../../models/referral')
+const referredAmount = require('../../models/referralAmount')
+const { getLivePrice } = require('../auth/helpers')
 
 const getWalletById = async (req, res) => {
+    const user = req?.user?._id
+    const traderKey = await copytrade.findOne({ user_id: user })
+    // console.log(traderKey, 'traderkey');
+    let total_price_in_usd = 0
     try {
-        const user = req.user
-        req = matchedData(req)
-        const balance = []
-        let total_price_in_usd = 0
-        const data = await wallet.find({ user_id: user._id }).populate("asset_id").sort({ balance: -1 })
-        for (j = 0; j < data.length; j++) {
+        const client = new RestClientV5({
+            testnet: false,
+            key: traderKey.apikey,
+            secret: traderKey.secretkey
+        });
 
-            let usdtBalance = getBalance.getBalanceUsdt(data[j].symbol, data[j].balance)
-            total_price_in_usd = total_price_in_usd + usdtBalance
-            let chain_balance = {
-                symbol: data[j].symbol,
-                bal: data[j].balance,
-                usdtBalance: usdtBalance
+        const depositOnChain = await client.getDepositRecords({ coin: 'USDT' })
+        // console.log(depositOnChain, 'depositOnChain');
+        // const depositOnChain = {
+        //     "retCode": 0,
+        //     "retMsg": "success",
+        //     "result": {
+        //         "rows": [
+        //             {
+        //                 "coin": "BTC",
+        //                 "chain": "ETH",
+        //                 "amount": "0.02",
+        //                 "txID": "skip-notification-scene-test-amount-202212270944-533285-USDT",
+        //                 "status": 3,
+        //                 "toAddress": "test-amount-address",
+        //                 "tag": "",
+        //                 "depositFee": "",
+        //                 "successAt": "1672134274000",
+        //                 "confirmations": "1000",
+        //                 "txIndex": "",
+        //                 "blockHash": "",
+        //                 "batchReleaseLimit": "-1",
+        //                 "depositType": "0"
+        //             },
+        //             // {
+        //             //     "coin": "USDT",
+        //             //     "chain": "ETH",
+        //             //     "amount": "500000",
+        //             //     "txID": "skip-notification-scene-test-amount-202212270944-533285-USDT",
+        //             //     "status": 3,
+        //             //     "toAddress": "test-amount-address",
+        //             //     "tag": "",
+        //             //     "depositFee": "",
+        //             //     "successAt": "1672134273900",
+        //             //     "confirmations": "10000",
+        //             //     "txIndex": "",
+        //             //     "blockHash": "",
+        //             //     "batchReleaseLimit": "-1",
+        //             //     "depositType": "0"
+        //             // },
+        //         ],
+        //         "nextPageCursor": "eyJtaW5JRCI6MTA0NjA0MywibWF4SUQiOjEwNDYwNDN9"
+        //     },
+        //     "retExtInfo": {},
+        //     "time": 1672191992512
+        // };
+        const rows = depositOnChain?.result?.rows;
+
+        const depositOffChain = await client.getInternalDepositRecords({})
+        // console.log(depositOffChain, 'depositOffChain');
+        // const depositOffChain = {
+
+        //     "retCode": 0,
+        //     "retMsg": "success",
+        //     "result": {
+        //         "rows": [
+        //             {
+        //                 "id": "1103",
+        //                 "amount": "0.02",
+        //                 "type": 1,
+        //                 "coin": "ETH",
+        //                 "address": "xxxx***@gmail.com",
+        //                 "status": 2,
+        //                 "createdTime": "1705393280",
+        //                 "txID": "77c37e5c-d9fa-41e5-bd13-c9b59d95"
+        //             },
+        //             // {
+        //             //     "id": "1103",
+        //             //     "amount": "0.1",
+        //             //     "type": 1,
+        //             //     "coin": "ETH",
+        //             //     "address": "xxxx***@gmail.com",
+        //             //     "status": 2,
+        //             //     "createdTime": "1705393281",
+        //             //     "txID": "77c37e5c-d9fa-41e5-bd13-c9b59d95"
+        //             // },
+        //             // {
+        //             //     "id": "1103",
+        //             //     "amount": "0.1",
+        //             //     "type": 1,
+        //             //     "coin": "ETH",
+        //             //     "address": "xxxx***@gmail.com",
+        //             //     "status": 2,
+        //             //     "createdTime": "1705393279",
+        //             //     "txID": "77c37e5c-d9fa-41e5-bd13-c9b59d95"
+        //             // },
+        //         ],
+        //         "nextPageCursor": "eyJtaW5JRCI6MTEwMywibWF4SUQiOjExMDN9"
+        //     },
+        //     "retExtInfo": {},
+        //     "time": 1705395632689
+
+        // }
+        const rows1 = depositOffChain?.result?.rows;
+        let depositOnChain1 = rows?.length > 0 ? rows[0] : '';
+
+        if (rows?.length > 0 && rows1?.length > 0) {
+            for (let i = 0; i < rows?.length; i++) {
+                // console.log('foorloop1');
+                if (rows[i]?.successAt < depositOnChain1?.successAt) {
+                    depositOnChain1 = rows[i];
+                }
             }
-            balance.push(chain_balance)
+            // console.log(depositOnChain1, 'depositOnChain1');
+            let depositOffChain1 = rows1?.length > 0 ? rows1[0] : ""
 
-        }
+            for (let i = 0; i < rows1?.length; i++) {
+                // console.log('foorloop2');
+                if (rows1[i]?.createdTime < depositOffChain1?.createdTime) {
+                    depositOffChain1 = rows1[i];
+                }
+            }
+            // console.log(depositOffChain1, 'depositOffChain1');
+            const deposit = {
+                depositOnChain: depositOnChain1,
+                depositOffChain: depositOffChain1
+            };
 
-        const essesentials = await cpytrades.findOne({user_id : user._id})
-        console.log(essesentials,'essesentials');
+            // console.log(deposit, 'deposit');
 
-        // apikey
-        // secretkey
-        // passphrase
+            const time = Number(deposit?.depositOnChain?.successAt);
+            const date = new Date(time * 1000);
+            // console.log(date, 'dateee');
+            const utcString = date.toUTCString();
+            const unixTimestamp = Number(deposit?.depositOffChain?.createdTime);
+            const date1 = unixTimestamp ? new Date(unixTimestamp * 1000) : 0
+            const utcDateString = date1?.toUTCString();
+            // console.log(utcString, 'utcString');
+            // console.log(utcDateString, 'utcDateString');
 
-        // /api/v5/account/balance?ccy=USDT
-
-        const USDTBAL = await imperialApiAxios(
-            "get",
-            "https://www.okx.com/api/v5/account/balance",
-            `/api/v5/account/balance`,
-            {},
-            essesentials.apikey,
-            essesentials.secretkey,
-            essesentials.passphrase,
-        );
-
-        // console.log(USDTBAL.data[0].totalEq,'CHAIN');
-        total_price_in_usd = Number(USDTBAL.data[0].totalEq)
-        console.log(total_price_in_usd,'*******************');
-
-        const eligiblecheck = await USER.findById(user._id)
-
-        if(eligiblecheck.iseligible == 'null'){
-
-            const firstDeposit =  await assetBills(user._id);
-            console.log(firstDeposit,'NULL *******************');
-            if(firstDeposit != 'null' && firstDeposit.length > 0){
-
-            if(firstDeposit[0].balChg >= 50 ){
-
-            const copyMaster = await cpytrades.findOne({user_id : user._id})
-            if(copyMaster.follower_user_id.length > 0){
-    
-            const updateReedeme = {
-                iseligible : 'completed',
-                referaldeposit : 'eligible'
+            let result;
+            if (utcString < utcDateString) {
+                result = depositOnChain1;
+            } else {
+                result = depositOffChain1;
+            }
+            // console.log(result, 'result');
+            if (result.coin == 'USDT') {
+                total_price_in_usd = result?.amount
+            }
+            else {
+                const coin = result?.coin
+                const live_price = await getLivePrice(coin)
+                // console.log(live_price, 'price');
+                const bal = live_price * Number(result?.amount)
+                total_price_in_usd = Math.round(bal)
+                // console.log(Math.round(total_price_in_usd), total_price_in_usd, 'total_price_in_usd');
             }
 
-            const trader = await USER.findByIdAndUpdate({_id : user._id},updateReedeme)
-                
-            console.log(firstDeposit[0].balChg,'******************* FIRSTDEPOSIT AMOUNT'); 
-            
-        }
-        }else{
-            const trader = await USER.findByIdAndUpdate({_id : user._id},{iseligible: 'not_eligible', referaldeposit : 'not_eligible'})
-        }
+            const eligiblecheck = await USER.findById(user._id)
 
-        
+            // if (eligiblecheck.iseligible == 'null') {
+
+            if (total_price_in_usd >= 50 && eligiblecheck?.referred_by_code && traderKey?.follower_user_id.length > 0) {
+                const alreadyReferreduser = await referral.findOne({ user_id: user })
+                if (alreadyReferreduser) {
+                    res.status(201).json({
+                        success: true,
+                        message: "user already referred"
+                    })
+                }
+                else {
+                    const referralAmount = await referredAmount.findOne({})
+                    for (let i = 0; i < traderKey?.follower_user_id?.length; i++) {
+                        const newData = new referral({
+                            user_id: user,
+                            referral_id: traderKey?.follower_user_id[i]?.follower_id,
+                            referral_code: eligiblecheck?.referred_by_code,
+                            is_deposit: true,
+                            is_copytrade: true,
+                            is_reward: 0,
+                            amount: referralAmount?.amount
+                        })
+                        newData.save()
+                    }
+
+
+                    const eligibleUser = await USER.findOne({ _id: eligiblecheck.referred_by_id })
+                    const updateReedeme = {
+                        redeem_points: eligibleUser?.redeem_points == '0' ? referralAmount?.amount : Number(eligibleUser?.redeem_points) + Number(referralAmount?.amount),
+                        total_reward: eligibleUser?.total_reward == 0 ? referralAmount?.amount : Number(eligibleUser?.total_reward) + Number(referralAmount?.amount),
+                        is_reward: 0
+                    }
+                    const UpdateeligibleUser = await USER.findOneAndUpdate({ _id: eligiblecheck?.referred_by_id }, updateReedeme)
+
+                    if (UpdateeligibleUser) {
+                        res.status(200).json({
+                            success: true,
+                            message: "you are eligible",
+                            result: ""
+                        })
+                    }
+                }
+            }
+            else {
+                // const UneligibleUser = await USER.findByIdAndUpdate({ _id: user._id }, { iseligible: 'not_eligible', referaldeposit: 'not_eligible' })
+                // if (UneligibleUser) {
+                res.status(201).json({
+                    success: false,
+                    message: "you are not eligible",
+                    result: ""
+                })
+                // }
+            }
+
+            // }
         }
-    }
-
-        if (data.length > 0) {
-            res.status(200).json({
-                success: true,
-                result: data, total_price_in_usd,
-                message: 'Data found succesfully'
-            })
-
-        } else {
-            res.status(400).json({
+        else {
+            res.status(201).json({
                 success: false,
-                result: null,
-                message: 'Data not found'
+                message: "No data",
+                result: ""
             })
-
         }
-
     } catch (error) {
-        handleError(res, error)
+        handleError(res, error);
     }
-};
+}
+
 module.exports = { getWalletById };

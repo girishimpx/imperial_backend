@@ -4,7 +4,7 @@ const cpgrade = require("../../models/copytrade");
 const { handleError } = require("../../middleware/utils");
 const trade = require("../../models/trade");
 const { isIDGood } = require("../../middleware/utils/isIDGood");
-const {  listInitOptions } = require("../../middleware/db/listInitOptions");
+const { listInitOptions } = require("../../middleware/db/listInitOptions");
 
 /**
  * Verify function called by route
@@ -19,24 +19,24 @@ const FollowerCount = async (req, res) => {
     const user = req.user;
     req = matchedData(req)
 
-const filterData  = await cpgrade.find({"follower_user_id.follower_id":req.id})
-    
+    const filterData = await cpgrade.find({ "follower_user_id.follower_id": req.id })
 
 
 
-if(filterData.length > 0 ){
-    res.status(200).json({
+
+    if (filterData.length > 0) {
+      res.status(200).json({
         success: true,
         result: filterData.length,
-        message:"Data found Successfully" ,
+        message: "Data found Successfully",
       });
-}else{
-    res.status(400).json({
+    } else {
+      res.status(400).json({
         success: false,
         result: "",
         message: "Data not found",
       });
-}
+    }
   } catch (error) {
     handleError(res, error);
   }

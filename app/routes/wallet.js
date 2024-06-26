@@ -21,8 +21,9 @@ const { getAllWallet } = require('../controllers/wallet')
 const { getWalletById } = require('../controllers/wallet/getWalletById')
 const { getWalletByAssetId } = require('../controllers/wallet/getWalletByAssetId')
 const { updateWallet } = require('../controllers/wallet/updateWallet')
-const { WalletBAlanceUpdateCron, createDepositeAddress, subAccountBalance, subAccountFundingBalance, withdrawUser, withdrawOtp, withDrawCheckOTP,tradepairs } = require('../controllers/wallet')
-
+const { WalletBAlanceUpdateCron, createDepositeAddress, subAccountBalance, subAccountFundingBalance, withdrawUser, withdrawOtp, withDrawCheckOTP, tradepairs } = require('../controllers/wallet')
+const { updateReedem } = require('../controllers/wallet/updateRedeem')
+const { getSubAccBalance } = require('../controllers/wallet/getSubAccBalance')
 
 router.post(
   '/createwallet',
@@ -151,6 +152,21 @@ router.post(
   updateWallet
 )
 
+router.post(
+  '/updateRedeem',
+  requireAuth,
+  roleAuthorization(['user']),
+  trimRequest.all,
+  updateReedem
+)
+
+router.post(
+  '/getSubAccBal',
+  requireAuth,
+  roleAuthorization(['user']),
+  trimRequest.all,
+  getSubAccBalance
+)
 
 
 module.exports = router

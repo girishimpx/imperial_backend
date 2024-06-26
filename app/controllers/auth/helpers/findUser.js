@@ -14,7 +14,7 @@ const findUser = (email = '') => {
       'password loginAttempts blockExpires name email role verified verification email_verify trader_type suspend kyc_verify iseligible referred_by_id referaldeposit',
       async (err, item) => {
         try {
-          await itemNotFound(err, item, 'Invalid Credential')
+          await itemNotFound(err, item, 'Not A Registered Mail-Id')
           resolve(item)
         } catch (error) {
           reject(error)

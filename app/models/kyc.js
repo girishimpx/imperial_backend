@@ -7,7 +7,7 @@ const KycSchema = new mongoose.Schema(
             type: mongoose.Types.ObjectId,
             required: true,
             default: "",
-            ref:'User'
+            ref: 'User'
         },
         status: {
             type: String,
@@ -97,6 +97,14 @@ const KycSchema = new mongoose.Schema(
             type: String,
             required: true,
             default: ""
+        },
+        expiry_date: {
+            type: String,
+            required: true,
+            default: ""
+        },
+        device_id: {
+            type: Array
         }
     },
     {

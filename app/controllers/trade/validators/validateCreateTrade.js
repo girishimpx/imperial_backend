@@ -17,10 +17,10 @@ const validateCreateTrade = [
     .not()
     .isEmpty()
     .withMessage('ccy is required'),
-  check('tag')
-    .not()
-    .isEmpty()
-    .withMessage('Tag is required'),
+  // check('tag')
+  //   .not()
+  //   .isEmpty()
+  //   .withMessage('Tag is required'),
   check('side')
     .not()
     .isEmpty()

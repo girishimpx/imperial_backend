@@ -19,12 +19,15 @@ const {
 } = require("./app/middleware/ImperialApi/futureTradePair");
 
 const { tradeStatus } = require("./app/controllers/trade/creonjob");
+const { getTradeDetails } = require("./app/controllers/byBitAPI/getTradeDetails.js");        // update trade status Filled or Cancelled
 // const { allTickers } = require('./app/controllers/assets/allTickersCron')
 const { AllTickersUpdate } = require("./app/controllers/assets/FUTURECRON");
 const {
   WalletBAlanceUpdateCron,
 } = require("./app/controllers/wallet/CRON_Wallet_balanceupdate");
 const { subAccountBalance } = require("./app/controllers/wallet");
+const { updateBalanceForAllUser } = require("./app/controllers/byBitAPI");
+const { updateAllUserFundBalance } = require("./app/controllers/byBitAPI");
 const { deletePlan } = require("./app/controllers/users/createPlan");
 // Setup express server port from ENV, default: 3000
 app.set("port", process.env.PORT || 3000);
@@ -135,9 +138,12 @@ const cron = require("node-cron");
 
 cron.schedule("*/20 * * * * *", function () {
   tradeStatus();
+  getTradeDetails();
 });
 
-cron.schedule("*/15 * * * * *", function () {
+cron.schedule("*/10 * * * * *", function () {
+  updateBalanceForAllUser();
+  updateAllUserFundBalance();
   subAccountBalance();
 });
 

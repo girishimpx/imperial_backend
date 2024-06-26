@@ -16,23 +16,23 @@ const AddSubscriber = async (req, res) => {
     const user = req.user;
     req = matchedData(req);
     const goodID = mongoose.Types.ObjectId.isValid(req.follower_id);
-console.log(user._id,"--id--")
+    console.log(user._id, "--id--")
 
-// const add = await trade.find({"follower_user_id.follower_id":req.follower_id})
-// res.send(add)
+    // const add = await trade.find({"follower_user_id.follower_id":req.follower_id})
+    // res.send(add)
 
     if (goodID) {
       const MyData = await trade.find({ user_id: user._id });
-    
+
       if (MyData.length > 0) {
 
-        for(let j = 0; j < MyData[0].follower_user_id.length; j++) {
-          if(MyData[0].follower_user_id[j].follower_id == req.follower_id){
+        for (let j = 0; j < MyData[0].follower_user_id.length; j++) {
+          if (MyData[0].follower_user_id[j].follower_id == req.follower_id) {
             return res.status(200).json({
               success: false,
               result: "",
               message: "You have already subscribed this follower",
-            });  
+            });
           }
         }
 

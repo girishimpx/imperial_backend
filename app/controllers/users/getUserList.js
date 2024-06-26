@@ -10,10 +10,10 @@ const getBalance = require('../wallet/getBalanceUsdt');
  */
 const getUserslist = async (req, res) => {
   try {
-    const {limit , page} = req.query
+    const { limit, page } = req.query
     const urs = await User.find()
     const skip = (page - 1) * limit
-    const totalPages = Math.ceil(urs.length / limit )
+    const totalPages = Math.ceil(urs.length / limit)
     const option = await listInitOptions(req);
     console.log(option, "listtt");
 
@@ -26,7 +26,7 @@ const getUserslist = async (req, res) => {
           as: "subaccounts",
         },
       },
-      {$unwind : '$subaccounts'},
+      { $unwind: '$subaccounts' },
       {
         $lookup: {
           from: "wallets",
@@ -35,10 +35,10 @@ const getUserslist = async (req, res) => {
           as: "wallets",
         },
       },
-      {$skip : Number(skip)},
-      {$limit : Number(limit) },
+      { $skip: Number(skip) },
+      { $limit: Number(limit) },
     ]);
-    console.log(urs.length,"len")
+    console.log(urs.length, "len")
 
     const balance = [];
 
@@ -64,7 +64,7 @@ const getUserslist = async (req, res) => {
     if (userlist.length > 0) {
       res.status(200).json({
         success: true,
-        result: userlist,totalPages,
+        result: userlist, totalPages,
         message: "Users found successfully",
       });
     } else {

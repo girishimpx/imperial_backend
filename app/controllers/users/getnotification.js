@@ -11,30 +11,30 @@ const { assetExistsExcludingItself } = require('../assets/helpers/assetExistsExc
  * @param {Object} res - response object
  */
 const getMyNOtification = async (req, res) => {
-    try {
+  try {
 
-      const user  = req.user
-      req = matchedData(req)
-      const notification = await Model.find({user_id: user._id,checked:false})
-if(notification.length > 0 ){
-  res.status(200).json({
-    success: true,
-    result: notification,
-    message: "You have some Notification"
-})
+    const user = req.user
+    req = matchedData(req)
+    const notification = await Model.find({ user_id: user._id, checked: false })
+    if (notification.length > 0) {
+      res.status(200).json({
+        success: true,
+        result: notification,
+        message: "You have some Notification"
+      })
 
-} else{
-  res.status(400).json({
-    success: false,
-    result: null,
-    message: "Notification Not Exist"
-})
-}     
-        
-
-    } catch (error) {
-      handleError(res, error)
+    } else {
+      res.status(201).json({
+        success: false,
+        result: null,
+        message: "Notification Not Exist"
+      })
     }
+
+
+  } catch (error) {
+    handleError(res, error)
   }
-  
-  module.exports = { getMyNOtification }
+}
+
+module.exports = { getMyNOtification }

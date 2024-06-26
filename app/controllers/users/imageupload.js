@@ -11,8 +11,8 @@ const imageApi = async (req, res) => {
   try {
 
 
-    const live = "https://app.imperialx.exchange//imperialApi/uploads"
-    // const live='http://localhost:3500/imperialApi/uploads'
+    const live = "https://app.imperialx.exchange/imperialApi/uploads"
+    // const live = 'http://localhost:3500/imperialApi/uploads'
 
     if (req?.file?.filename) {
       const storedData = {
